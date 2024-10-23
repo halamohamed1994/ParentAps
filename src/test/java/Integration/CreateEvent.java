@@ -14,7 +14,11 @@ import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.io.File;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class CreateEvent {
     WebDriver driver = new EdgeDriver();
@@ -38,24 +42,23 @@ public class CreateEvent {
         WebElement parentElement = wait.until(ExpectedConditions.elementToBeClickable(
                 By.xpath("//div[@class='institution__information'][.//div[@class='institution__name' and contains(text(), '" + name + "')]]")
         ));
-
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", parentElement);
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", parentElement);
+        helper.scrollIntoView(parentElement,driver);
+        helper.clickOnView(parentElement,driver);
     }
 
     @When(": Click on calendar icon from the top of page")
     public void openCalendarPage() {
         WebElement calendarIcon = wait.until(ExpectedConditions.elementToBeClickable(
                 By.cssSelector("i.picon-new_calendar")));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", calendarIcon);
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", calendarIcon);
+        helper.scrollIntoView(calendarIcon,driver);
+        helper.clickOnView(calendarIcon,driver);
     }
 
     @And(": Click on create event")
     public void clickOnCreateEvent() {
         WebElement createEventButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("createEventBtn")));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", createEventButton);
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", createEventButton);
+        helper.scrollIntoView(createEventButton,driver);
+        helper.clickOnView(createEventButton,driver);
     }
 
     @After
@@ -95,5 +98,40 @@ public class CreateEvent {
 
     @Then(": Fill all fields with valid data")
     public void fillCreationFields() {
+        WebElement uploadButton = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//button[contains(., 'Upload or take a photo')]")));
+        uploadButton.click();
+        WebElement fileInput = driver.findElement(By.id("imageInput"));
+        String filePath = new File("src/test/resources/test_file.png").getAbsolutePath();
+        fileInput.sendKeys(filePath);
+
+        driver.findElement(By.id("eventTitle")).sendKeys("test title");
+        driver.findElement(By.id("eventDescription")).sendKeys("test description");
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yy");
+        String formattedDate = LocalDate.now().format(formatter);
+        WebElement dateInput = driver.findElement(By.xpath("//input[@placeholder='Select a date']"));
+        helper.scrollIntoView(dateInput,driver);
+        helper.clickOnView(dateInput,driver);
+        dateInput.sendKeys(formattedDate);
+
+        WebElement startDate = driver.findElement(By.id("timepickerStartTime"));
+        helper.scrollIntoView(startDate,driver);
+        helper.clickOnView(startDate,driver);
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.className("ui-timepicker-list")));
+        WebElement firstDate = driver.findElement(By.xpath("//ul[contains(@class, 'ui-timepicker-list')]/li[1]"));
+        helper.scrollIntoView(firstDate,driver);
+        helper.clickOnView(firstDate,driver);
+
+        WebElement endDate = driver.findElement(By.id("timepickerEndTime")); // Adjust if necessary
+        helper.scrollIntoView(endDate,driver);
+        helper.clickOnView(endDate,driver);
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.className("ui-timepicker-list")));
+        WebElement secondDate = driver.findElement(By.xpath("//ul[contains(@class, 'ui-timepicker-list')]/li[3]"));
+        helper.scrollIntoView(secondDate,driver);
+        helper.clickOnView(secondDate,driver);
+
+
+        driver.findElement(By.id("submitCreateEventBtn")).click();
+
     }
 }

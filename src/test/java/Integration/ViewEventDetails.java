@@ -22,6 +22,7 @@ import java.util.List;
 public class ViewEventDetails {
     WebDriver driver = new EdgeDriver();;
     WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+    Helper helper = new Helper();
 
     @Given(": ParentAps website is opened")
     public void openParentApsWebsite() {
@@ -39,11 +40,8 @@ public class ViewEventDetails {
         WebElement parentElement = wait.until(ExpectedConditions.elementToBeClickable(
                 By.xpath("//div[@class='institution__information'][.//div[@class='institution__name' and contains(text(), '" + name + "')]]")
         ));
-
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", parentElement);
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", parentElement);
-
-
+        helper.scrollIntoView(parentElement,driver);
+        helper.clickOnView(parentElement,driver);
     }
 
     @Then(": Check the details of event is returned successfully")
