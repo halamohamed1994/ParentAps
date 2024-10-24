@@ -7,12 +7,6 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:
-    inputs:
-      distribution:
-        description: 'The distribution input'
-        required: true
-        default: 'default-value'
 
 jobs:
   build:
@@ -26,6 +20,13 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '21'
+          java-package: jdk
+          architecture: x64
+          check-latest: false
+          server-id: github
+          server-username: ${{ secrets.GITHUB_ACTOR }}
+          server-password: ${{ secrets.GITHUB_TOKEN }}
+          overwrite-settings: true
 
       - name: Build with Maven
         run: mvn clean install
